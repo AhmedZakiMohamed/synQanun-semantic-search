@@ -2,7 +2,7 @@ venv/
 .venv/
 __pycache__/
 *.pyc
-.chroma_db/
+chroma_db/
 data/*.db
 .env
 .DS_Store
