@@ -126,8 +126,7 @@ Request body accepts **`query` or `q`**, and **`top_k` or `topK`**.
 ```json
 {
   "q": "ما هي الأحكام المتعلقة بتزوير البيانات الإلكترونية وإنتاج بيانات غير أصلية لاستخدامها لأغراض قانونية؟",
-  "topK": 3,
-  "doc_type": "egyptian_law"
+  "topK": 3
 }
 ```
 
@@ -150,9 +149,27 @@ Request body accepts **`query` or `q`**, and **`top_k` or `topK`**.
           "article_label": "المادة 12",
           "section_index": 12,
           "score": 0.8652,
-          "text": "المادة 12: التزوير المتعلق بنظام تكنولوجيا معلومات واتصالات...",
+          "text": "المادة 12: التزوير المتعلق بنظام تكنولوجيا معلومات واتصالات\n1 - تعتمد كل دولة طرف ما قد يلزم من تدابير تشريعية...",
           "matched_chunks": 1,
           "chunk_seqs": [15]
+        },
+        {
+          "article_number": "9",
+          "article_label": "المادة 9",
+          "section_index": 9,
+          "score": 0.8414,
+          "text": "المادة 9: التدخل في البيانات الإلكترونية\n1 - تعتمد كل دولة طرف ما قد يلزم من تدابير تشريعية...",
+          "matched_chunks": 1,
+          "chunk_seqs": [11]
+        },
+        {
+          "article_number": "8",
+          "article_label": "المادة 8",
+          "section_index": 8,
+          "score": 0.8326,
+          "text": "المادة 8: الاعتراض غير المشروع\n1 - تعتمد كل دولة طرف ما قد يلزم من تدابير تشريعية...",
+          "matched_chunks": 1,
+          "chunk_seqs": [10]
         }
       ]
     },
@@ -167,9 +184,27 @@ Request body accepts **`query` or `q`**, and **`top_k` or `topK`**.
           "article_label": "المادة 6",
           "section_index": 5,
           "score": 0.838,
-          "text": "المادة 6: لمأموري الضبط القضائي المختصين...",
+          "text": "المادة 6\n\nقابلة\nلمأمورى الضبط القضائى المختصين ، لمدة لا تزيد على ثلاثين يوما...",
           "matched_chunks": 1,
           "chunk_seqs": [10]
+        },
+        {
+          "article_number": "20",
+          "article_label": "المادة 20",
+          "section_index": 19,
+          "score": 0.8215,
+          "text": "المادة 20\nيعاقب بالحبس مدة لا تقل عن سنتين ، وبغرامة لا تقل عن خمسين ألف جنيه...",
+          "matched_chunks": 1,
+          "chunk_seqs": [26]
+        },
+        {
+          "article_number": "2",
+          "article_label": "المادة 2",
+          "section_index": 1,
+          "score": 0.8181,
+          "text": "المادة 2\nأولا- مع عدم الإخلال بالأحكام الواردة بهذا القانون...",
+          "matched_chunks": 1,
+          "chunk_seqs": [5, 6]
         }
       ]
     }
