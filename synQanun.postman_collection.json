@@ -1,0 +1,63 @@
+{
+  "info": {
+    "_postman_id": "7d6a7872-b771-4b8b-b0a9-35d092846823",
+    "name": "synQanun",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "46720689",
+    "_collection_link": "https://go.postman.co/collection/46720689-7d6a7872-b771-4b8b-b0a9-35d092846823?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "checkDbConect",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "createPrompt",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"ما هي الأحكام المتعلقة بتزوير البيانات الإلكترونية وإنتاج بيانات غير أصلية لاستخدامها لأغراض قانونية؟\",\n  \"top_k\": 3\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/search",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "search"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

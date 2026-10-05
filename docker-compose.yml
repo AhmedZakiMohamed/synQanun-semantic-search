@@ -1,0 +1,12 @@
+services:
+  semantic-search-api:
+    build: .
+    container_name: legal_semantic_search
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chroma_db:/app/chroma_db
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
