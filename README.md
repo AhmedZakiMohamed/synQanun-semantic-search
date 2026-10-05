@@ -40,6 +40,16 @@ We use an **Article-Aware Chunking** approach to keep legal contexts meaningful:
 
 ---------
 
+## Scalability & Production Readiness
+
+The API is architected for zero-friction production scaling:
+1. **Vector Store:** Easy migration from ChromaDB to **Qdrant** / **pgvector** for distributed, multi-node setups.
+2. **Decoupled Pipeline:** Isolation of background ingestion tasks from live search queries.
+3. **Model Serving:** Offloading inference to dedicated frameworks (**Triton** / **TEI**) for isolated GPU auto-scaling.
+4. **Caching:** **Redis** integration for sub-millisecond query result caching.
+
+----------
+
 ## System Limitations
 
 - **Cold Start & CPU:** Initial startup downloads the embedding model (~1.1 GB). CPU execution adds slight inference latency.
