@@ -125,20 +125,43 @@ Request body accepts **`query` or `q`**, and **`top_k` or `topK`**.
 
 ```json
 {
-  "query": "ما هي الأحكام المتعلقة بتزوير البيانات الإلكترونية...",
+  "query": "ما هي الأحكام المتعلقة بتزوير البيانات الإلكترونية وإنتاج بيانات غير أصلية لاستخدامها لأغراض قانونية؟",
   "top_k": 3,
-  "total": 1,
+  "total": 2,
   "results": [
+    {
+      "source_doc": "United Nations Convention against Cybercrime.txt",
+      "doc_type": "international_convention",
+      "score": 0.8652,
+      "matched_chunks": 6,
+      "matched_articles": [
+        {
+          "article_number": "12",
+          "article_label": "المادة 12",
+          "section_index": 12,
+          "score": 0.8652,
+          "text": "المادة 12: التزوير المتعلق بنظام تكنولوجيا معلومات واتصالات...",
+          "matched_chunks": 1,
+          "chunk_seqs": [15]
+        }
+      ]
+    },
     {
       "source_doc": "law_175_2018.txt",
       "doc_type": "egyptian_law",
-      "article_number": "14",
-      "article_label": "المادة 14",
-      "section_index": 12,
-      "score": 0.8921,
-      "text": "المادة 14: يعاقب بالسجن مدة لا تقل عن سنة وبغرامة لا تقل عن...",
-      "matched_chunks": 2,
-      "chunk_seqs": [30, 31]
+      "score": 0.838,
+      "matched_chunks": 3,
+      "matched_articles": [
+        {
+          "article_number": "6",
+          "article_label": "المادة 6",
+          "section_index": 5,
+          "score": 0.838,
+          "text": "المادة 6: لمأموري الضبط القضائي المختصين...",
+          "matched_chunks": 1,
+          "chunk_seqs": [10]
+        }
+      ]
     }
   ]
 }
