@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import asyncio
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 _GAP_MARKER = "[...]"
 _MIN_OVERLAP_CHARS = 5
-
+_MAX_ARTICLES_PER_DOC = 3  
 
 class SearchServiceError(RuntimeError):
     """Raised when the underlying retrieval fails."""
@@ -41,6 +40,17 @@ class AggregatedResult:
     chunk_seqs: tuple[int, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class DocumentResult:
+    """One document, ranked by its best-matching article."""
+
+    source_doc: str
+    doc_type: str
+    score: float  
+    matched_chunks: int  
+    matched_articles: tuple[AggregatedResult, ...] 
+
+
 def _meta_str(metadata: dict[str, Any], key: str, default: str = "") -> str:
     value = metadata.get(key, default)
     return value if isinstance(value, str) else str(value)
@@ -63,7 +73,7 @@ def _merge_overlap(previous: str, following: str, max_overlap: int) -> str:
 
 
 class SearchService:
-    """Retrieves chunks via LangChain similarity search and aggregates them by article."""
+    """Retrieves chunks via LangChain similarity search and aggregates them by document."""
 
     def __init__(
         self,
@@ -81,8 +91,8 @@ class SearchService:
         query: str,
         top_k: int | None = None,
         doc_type: str | None = None,
-    ) -> list[AggregatedResult]:
-        """Return up to ``top_k`` aggregated results ordered by best chunk score."""
+    ) -> list[DocumentResult]:  # [CHANGED] returns documents, not articles
+        """Return up to ``top_k`` documents ordered by their best-matching article."""
         k = self._settings.TOP_K if top_k is None else top_k
         if not 1 <= k <= self._settings.MAX_TOP_K:
             raise InvalidQueryError(f"top_k must be between 1 and {self._settings.MAX_TOP_K}.")
@@ -102,14 +112,14 @@ class SearchService:
         except Exception as exc:
             raise SearchServiceError(f"Similarity search failed: {exc}") from exc
 
-        return self._aggregate(hits)[:k]
+        return self._aggregate_documents(hits, k)  
 
     async def asearch(
         self,
         query: str,
         top_k: int | None = None,
         doc_type: str | None = None,
-    ) -> list[AggregatedResult]:
+    ) -> list[DocumentResult]: 
         """Async wrapper that keeps the event loop free during embedding and I/O."""
         return await asyncio.to_thread(self.search, query, top_k, doc_type)
 
@@ -124,20 +134,46 @@ class SearchService:
             )
         return f"{E5_QUERY_PREFIX}{cleaned}" if self._settings.is_e5_model else cleaned
 
-    def _aggregate(self, hits: list[tuple[Document, float]]) -> list[AggregatedResult]:
-        groups: dict[tuple[str, int], list[tuple[Document, float]]] = {}
+    def _aggregate_documents(
+        self, hits: list[tuple[Document, float]], top_k: int
+    ) -> list[DocumentResult]:
+        article_groups: dict[tuple[str, int], list[tuple[Document, float]]] = {}
         for document, score in hits:
             key = (
                 _meta_str(document.metadata, "source_doc"),
                 _meta_int(document.metadata, "section_index"),
             )
-            groups.setdefault(key, []).append((document, score))
+            article_groups.setdefault(key, []).append((document, score))
 
-        results = [
-            self._build_result(source_doc, section_index, group)
-            for (source_doc, section_index), group in groups.items()
-        ]
-        results.sort(key=lambda r: (-r.score, r.source_doc, r.section_index))
+        doc_groups: dict[str, list[tuple[int, list[tuple[Document, float]]]]] = {}
+        for (source_doc, section_index), group in article_groups.items():
+            doc_groups.setdefault(source_doc, []).append((section_index, group))
+
+        def best(group: list[tuple[Document, float]]) -> float:
+            return max(score for _, score in group)
+
+       
+        ranked_docs = sorted(
+            doc_groups.items(),
+            key=lambda item: (-max(best(group) for _, group in item[1]), item[0]),
+        )[:top_k]
+
+        results: list[DocumentResult] = []
+        for source_doc, sections in ranked_docs:
+            sections.sort(key=lambda item: (-best(item[1]), item[0]))
+            articles = tuple(
+                self._build_result(source_doc, section_index, group)
+                for section_index, group in sections[:_MAX_ARTICLES_PER_DOC]
+            )
+            results.append(
+                DocumentResult(
+                    source_doc=source_doc,
+                    doc_type=articles[0].doc_type,
+                    score=articles[0].score,
+                    matched_chunks=sum(len(group) for _, group in sections),
+                    matched_articles=articles,
+                )
+            )
         return results
 
     def _build_result(

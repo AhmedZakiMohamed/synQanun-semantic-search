@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import asyncio
@@ -36,18 +35,18 @@ class SearchRequest(BaseModel):
         default=None,
         validation_alias=AliasChoices("top_k", "topK"),
         ge=1,
-        description="Maximum aggregated results (JSON keys: `top_k` or `topK`; defaults to TOP_K).",
+     
+        description="Maximum documents to return (JSON keys: `top_k` or `topK`; defaults to TOP_K).",
     )
     doc_type: Literal["egyptian_law", "international_convention"] | None = Field(
         default=None, description="Optional filter on document type."
     )
 
 
-class SearchHit(BaseModel):
+
+class ArticleHit(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    source_doc: str
-    doc_type: str
     article_number: str
     article_label: str
     section_index: int
@@ -57,11 +56,21 @@ class SearchHit(BaseModel):
     chunk_seqs: list[int]
 
 
+class DocumentHit(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    source_doc: str
+    doc_type: str
+    score: float
+    matched_chunks: int
+    matched_articles: list[ArticleHit]
+
+
 class SearchResponse(BaseModel):
     query: str
     top_k: int
     total: int
-    results: list[SearchHit]
+    results: list[DocumentHit]  
 
 
 class HealthResponse(BaseModel):
@@ -184,7 +193,7 @@ def create_app() -> FastAPI:
                 detail="Search failed due to an internal error.",
             ) from exc
 
-        hits = [SearchHit.model_validate(result) for result in results]
+        hits = [DocumentHit.model_validate(result) for result in results]  
         return SearchResponse(
             query=payload.query,
             top_k=effective_top_k,
