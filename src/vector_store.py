@@ -55,7 +55,7 @@ class LegalVectorStore:
                 persist_directory=self._persist_directory,
                 collection_metadata={_DISTANCE_KEY: COSINE_SPACE},
             )
-        except Exception as exc:  #
+        except Exception as exc:  
             raise VectorStoreError(
                 f"Failed to initialise Chroma collection '{self._collection_name}' "
                 f"at '{self._persist_directory}': {exc}"
