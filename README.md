@@ -1,6 +1,6 @@
 # SynQanun - Legal Semantic Search API
 
-A semantic search API over Egyptian laws and international conventions, built with FastAPI, LangChain, ChromaDB, and `intfloat/multilingual-e5-base`. It matches queries by meaning rather than keywords and returns results grouped by legal article (`المادة`), with Docker and local setup options.
+A semantic search API over Egyptian laws and international conventions, built with FastAPI, LangChain, ChromaDB, and `intfloat/multilingual-e5-base`. It matches queries by meaning rather than keywords and returns results grouped by document, with Docker and local setup options.
 
 ----------
 
@@ -17,7 +17,7 @@ The system operates in two main phases:
 ### 2. Search & Aggregation
 1. **Query Processing:** Cleans the user's search query, adds the E5 `query:` prefix, and generates its embedding.
 2. **Chunk Search:** Finds the most relevant text chunks from ChromaDB.
-3. **Article Aggregation:** Groups matched chunks by article, ranks articles by their top chunk score, and reconstructs the full article text for the final response.
+3. **Document Aggregation** Groups matched chunks by article, then groups articles by source document. Each document is scored by its best-matching article (max, so long documents are not favoured for having more chunks), the top-K documents are returned, and each keeps its best articles with the full article text reconstructed.
 
 ----------
 
